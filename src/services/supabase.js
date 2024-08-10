@@ -1,7 +1,12 @@
 import { createClient } from '@supabase/supabase-js'
-const supabaseUrl = 'https://obdblklzmkxcxebzcxvs.supabase.co'
-// eslint-disable-next-line no-undef
-const supabaseKey = process.env.SUPABASE_KEY
+
+const supabaseUrl = import.meta.env.VITE_SUPABASE_URL
+const supabaseKey = import.meta.env.VITE_SUPABASE_ANON_KEY
+
+if (!supabaseUrl || !supabaseKey) {
+  throw new Error('Supabase env variables not found')
+}
+
 const supabase = createClient(supabaseUrl, supabaseKey)
 
 export default supabase
