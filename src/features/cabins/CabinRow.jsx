@@ -1,4 +1,8 @@
-import styled from "styled-components";
+import { useState } from 'react'
+import styled from 'styled-components'
+import { CabinHooks } from '../../hooks/cabins/cabins.hooks'
+import { formatCurrency } from '../../utils/helpers'
+import CabinForm from './CabinForm'
 
 const TableRow = styled.div`
   display: grid;
@@ -10,7 +14,7 @@ const TableRow = styled.div`
   &:not(:last-child) {
     border-bottom: 1px solid var(--color-grey-100);
   }
-`;
+`
 
 const Img = styled.img`
   display: block;
@@ -19,22 +23,62 @@ const Img = styled.img`
   object-fit: cover;
   object-position: center;
   transform: scale(1.5) translateX(-7px);
-`;
+`
 
 const Cabin = styled.div`
   font-size: 1.6rem;
   font-weight: 600;
   color: var(--color-grey-600);
-  font-family: "Sono";
-`;
+  font-family: 'Sono';
+`
 
 const Price = styled.div`
-  font-family: "Sono";
+  font-family: 'Sono';
   font-weight: 600;
-`;
+`
 
 const Discount = styled.div`
-  font-family: "Sono";
+  font-family: 'Sono';
   font-weight: 500;
   color: var(--color-green-700);
-`;
+`
+
+const CabinRow = ({ cabin }) => {
+  const {
+    id: cabinId,
+    name,
+    maxCapacity,
+    regularPrice,
+    discount,
+    image,
+  } = cabin
+  const [showForm, setShowForm] = useState(false)
+
+  const { deleteCabin, isDeleting } = CabinHooks.useDeleteCabin({})
+
+  const onPressEdit = () => setShowForm(show => !show)
+  const onPressDelete = () => deleteCabin(cabinId)
+
+  return (
+    <>
+      <TableRow role='row'>
+        <Img src={image} loading='lazy' />
+        <Cabin>{name}</Cabin>
+        <div>Upto {maxCapacity} guests</div>
+        <Price>{formatCurrency(regularPrice)}</Price>
+        <Discount>{formatCurrency(discount)}</Discount>
+        <div>
+          <button onClick={onPressEdit} disabled={isDeleting}>
+            Edit
+          </button>
+          <button onClick={onPressDelete} disabled={isDeleting}>
+            Delete
+          </button>
+        </div>
+      </TableRow>
+      {showForm && <CabinForm cabin={cabin} />}
+    </>
+  )
+}
+
+export default CabinRow
