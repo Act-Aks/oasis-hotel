@@ -5,6 +5,7 @@ import {
   createCabin,
   deleteCabin,
   getCabins,
+  updateCabin,
 } from '../../services/cabinsService'
 
 const useGetCabins = () => {
@@ -43,12 +44,35 @@ const useCreateCabin = ({ onSuccess, onError }) => {
   }
 }
 
+const useEditCabin = ({ onSuccess, onError }) => {
+  const queryClient = useQueryClient()
+  const { mutate, isPending } = useMutation({
+    mutationFn: ({ updatedCabin, id }) => updateCabin(updatedCabin, id),
+    onSuccess: () => {
+      toast.success('Cabin successfully updated')
+      queryClient.invalidateQueries({
+        queryKey: [QueryKeys.Cabins],
+      })
+      onSuccess?.()
+    },
+    onError: error => {
+      toast.error(error.message)
+      onError?.()
+    },
+  })
+
+  return {
+    editCabin: mutate,
+    isEditingCabin: isPending,
+  }
+}
+
 const useDeleteCabin = ({ onSuccess, onError }) => {
   const queryClient = useQueryClient()
   const { mutate, isPending } = useMutation({
     mutationFn: deleteCabin,
     onSuccess: () => {
-      toast.success('Successfully Deleted')
+      toast.success('Successfully deleted')
       queryClient.invalidateQueries({
         queryKey: [QueryKeys.Cabins],
       })
@@ -70,4 +94,5 @@ export const CabinHooks = {
   useDeleteCabin,
   useGetCabins,
   useCreateCabin,
+  useEditCabin,
 }

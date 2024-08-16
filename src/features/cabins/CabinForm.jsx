@@ -21,8 +21,24 @@ const CabinForm = ({ cabin = {} }) => {
   const { createCabin, isCreatingCabin } = CabinHooks.useCreateCabin({
     onSuccess: () => reset(),
   })
+  const { editCabin, isEditingCabin } = CabinHooks.useEditCabin({
+    onSuccess: () => reset(),
+  })
 
-  const onSubmit = data => createCabin({ ...data, image: data.image[0] })
+  const isDisabled = isCreatingCabin || isEditingCabin
+
+  const onSubmit = data => {
+    const image = typeof data.image === 'string' ? data.image : data.image[0]
+
+    if (isEditMode) {
+      editCabin({
+        updatedCabin: { ...data, image },
+        id: cabinId,
+      })
+    } else {
+      createCabin({ ...data, image })
+    }
+  }
   const onError = errors => {}
 
   return (
@@ -31,7 +47,7 @@ const CabinForm = ({ cabin = {} }) => {
         <Input
           type='text'
           id='name'
-          disabled={isCreatingCabin}
+          disabled={isDisabled}
           {...register('name', { required: 'Name is required' })}
         />
       </FormRow>
@@ -40,7 +56,7 @@ const CabinForm = ({ cabin = {} }) => {
         <Input
           type='number'
           id='maxCapacity'
-          disabled={isCreatingCabin}
+          disabled={isDisabled}
           {...register('maxCapacity', {
             required: 'Maximum capacity is required',
             min: {
@@ -55,7 +71,7 @@ const CabinForm = ({ cabin = {} }) => {
         <Input
           type='number'
           id='regularPrice'
-          disabled={isCreatingCabin}
+          disabled={isDisabled}
           {...register('regularPrice', {
             required: 'Regular price is required',
             min: {
@@ -71,7 +87,7 @@ const CabinForm = ({ cabin = {} }) => {
           type='number'
           id='discount'
           defaultValue={0}
-          disabled={isCreatingCabin}
+          disabled={isDisabled}
           {...register('discount', {
             required: 'Discount is required',
             validate: value =>
@@ -89,7 +105,7 @@ const CabinForm = ({ cabin = {} }) => {
           type='number'
           id='description'
           defaultValue=''
-          disabled={isCreatingCabin}
+          disabled={isDisabled}
           {...register('description', { required: 'Description is required' })}
         />
       </FormRow>
@@ -98,17 +114,19 @@ const CabinForm = ({ cabin = {} }) => {
         <FileInput
           id='image'
           accept='image/*'
-          disabled={isCreatingCabin}
-          {...register('image', { required: 'Image is required' })}
+          disabled={isDisabled}
+          {...register('image', {
+            required: isEditMode ? false : 'Image is required',
+          })}
         />
       </FormRow>
 
       <FormRow>
         {/* type is an HTML attribute! */}
-        <Button variant='secondary' type='reset' disabled={isCreatingCabin}>
+        <Button variant='secondary' type='reset' disabled={isDisabled}>
           Cancel
         </Button>
-        <Button disabled={isCreatingCabin}>
+        <Button disabled={isDisabled}>
           {isEditMode ? 'Edit cabin' : 'Create new cabin'}
         </Button>
       </FormRow>

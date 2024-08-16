@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { HiPencil, HiSquare2Stack, HiTrash } from 'react-icons/hi2'
 import styled from 'styled-components'
 import { CabinHooks } from '../../hooks/cabins/cabins.hooks'
 import { formatCurrency } from '../../utils/helpers'
@@ -51,13 +52,26 @@ const CabinRow = ({ cabin }) => {
     regularPrice,
     discount,
     image,
+    description,
   } = cabin
   const [showForm, setShowForm] = useState(false)
 
   const { deleteCabin, isDeleting } = CabinHooks.useDeleteCabin({})
+  const { createCabin, isCreatingCabin } = CabinHooks.useCreateCabin({})
 
   const onPressEdit = () => setShowForm(show => !show)
   const onPressDelete = () => deleteCabin(cabinId)
+  const onPressDuplicate = () =>
+    createCabin({
+      name: `Copy of ${name}`,
+      description,
+      maxCapacity,
+      regularPrice,
+      discount,
+      image,
+    })
+
+  const isDisabled = isDeleting || isCreatingCabin
 
   return (
     <>
@@ -66,13 +80,20 @@ const CabinRow = ({ cabin }) => {
         <Cabin>{name}</Cabin>
         <div>Upto {maxCapacity} guests</div>
         <Price>{formatCurrency(regularPrice)}</Price>
-        <Discount>{formatCurrency(discount)}</Discount>
+        {discount ? (
+          <Discount>{formatCurrency(discount)}</Discount>
+        ) : (
+          <span>&mdash;</span>
+        )}
         <div>
-          <button onClick={onPressEdit} disabled={isDeleting}>
-            Edit
+          <button onClick={onPressDuplicate} disabled={isDisabled}>
+            <HiSquare2Stack />
           </button>
-          <button onClick={onPressDelete} disabled={isDeleting}>
-            Delete
+          <button onClick={onPressEdit} disabled={isDisabled}>
+            <HiPencil />
+          </button>
+          <button onClick={onPressDelete} disabled={isDisabled}>
+            <HiTrash />
           </button>
         </div>
       </TableRow>
