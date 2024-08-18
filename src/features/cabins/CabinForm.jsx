@@ -7,7 +7,7 @@ import FormRow from '../../ui/FormRow'
 import Input from '../../ui/Input'
 import Textarea from '../../ui/Textarea'
 
-const CabinForm = ({ cabin = {} }) => {
+const CabinForm = ({ cabin = {}, onCloseModal }) => {
   const { id: cabinId, ...cabinValues } = cabin
   const isEditMode = Boolean(cabinId)
 
@@ -19,10 +19,16 @@ const CabinForm = ({ cabin = {} }) => {
     formState: { errors },
   } = useForm({ defaultValues: isEditMode ? cabinValues : {} })
   const { createCabin, isCreatingCabin } = CabinHooks.useCreateCabin({
-    onSuccess: () => reset(),
+    onSuccess: () => {
+      reset()
+      onCloseModal?.()
+    },
   })
   const { editCabin, isEditingCabin } = CabinHooks.useEditCabin({
-    onSuccess: () => reset(),
+    onSuccess: () => {
+      reset()
+      onCloseModal?.()
+    },
   })
 
   const isDisabled = isCreatingCabin || isEditingCabin
@@ -42,14 +48,9 @@ const CabinForm = ({ cabin = {} }) => {
   const onError = errors => {}
 
   return (
-    <Form onSubmit={handleSubmit(onSubmit, onError)}>
+    <Form onSubmit={handleSubmit(onSubmit, onError)} type={onCloseModal ? 'modal' : 'regular'}>
       <FormRow label={'Cabin name'} error={errors?.name?.message}>
-        <Input
-          type='text'
-          id='name'
-          disabled={isDisabled}
-          {...register('name', { required: 'Name is required' })}
-        />
+        <Input type='text' id='name' disabled={isDisabled} {...register('name', { required: 'Name is required' })} />
       </FormRow>
 
       <FormRow label={'Maximum capacity'} error={errors?.maxCapacity?.message}>
@@ -90,17 +91,12 @@ const CabinForm = ({ cabin = {} }) => {
           disabled={isDisabled}
           {...register('discount', {
             required: 'Discount is required',
-            validate: value =>
-              value <= getValues().regularPrice ||
-              'Discount should be less than the regular price',
+            validate: value => value <= getValues().regularPrice || 'Discount should be less than the regular price',
           })}
         />
       </FormRow>
 
-      <FormRow
-        label={'Description for website'}
-        error={errors?.description?.message}
-      >
+      <FormRow label={'Description for website'} error={errors?.description?.message}>
         <Textarea
           type='number'
           id='description'
@@ -123,12 +119,10 @@ const CabinForm = ({ cabin = {} }) => {
 
       <FormRow>
         {/* type is an HTML attribute! */}
-        <Button variant='secondary' type='reset' disabled={isDisabled}>
+        <Button variant='secondary' type='reset' disabled={isDisabled} onClick={onCloseModal}>
           Cancel
         </Button>
-        <Button disabled={isDisabled}>
-          {isEditMode ? 'Edit cabin' : 'Create new cabin'}
-        </Button>
+        <Button disabled={isDisabled}>{isEditMode ? 'Edit cabin' : 'Create new cabin'}</Button>
       </FormRow>
     </Form>
   )

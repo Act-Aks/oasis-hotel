@@ -1,4 +1,8 @@
-import styled from "styled-components";
+import { cloneElement, createContext, useContext, useMemo, useState } from 'react'
+import { createPortal } from 'react-dom'
+import { HiXMark } from 'react-icons/hi2'
+import styled from 'styled-components'
+import useOutsideClickHandler from '../hooks/useOutsideClickHandler'
 
 const StyledModal = styled.div`
   position: fixed;
@@ -10,7 +14,7 @@ const StyledModal = styled.div`
   box-shadow: var(--shadow-lg);
   padding: 3.2rem 4rem;
   transition: all 0.5s;
-`;
+`
 
 const Overlay = styled.div`
   position: fixed;
@@ -22,7 +26,7 @@ const Overlay = styled.div`
   backdrop-filter: blur(4px);
   z-index: 1000;
   transition: all 0.5s;
-`;
+`
 
 const Button = styled.button`
   background: none;
@@ -47,4 +51,62 @@ const Button = styled.button`
     stroke: var(--color-grey-500); */
     color: var(--color-grey-500);
   }
-`;
+`
+
+const ModalContext = createContext(null)
+
+const useModal = () => {
+  const modalContext = useContext(ModalContext)
+
+  if (!modalContext) {
+    throw new Error('Modal context not found')
+  }
+
+  return modalContext
+}
+
+const Modal = ({ children }) => {
+  const [openName, setOpenName] = useState('')
+
+  const close = () => setOpenName('')
+  const contextValues = useMemo(
+    () => ({
+      openName,
+      close,
+      open: setOpenName,
+    }),
+    [openName],
+  )
+
+  return <ModalContext.Provider value={contextValues}>{children}</ModalContext.Provider>
+}
+
+const Trigger = ({ children, opens: openContentName }) => {
+  const { open } = useModal()
+
+  return cloneElement(children, { onClick: () => open(openContentName) })
+}
+
+const Content = ({ children, name }) => {
+  const { openName, close } = useModal()
+  const { ref } = useOutsideClickHandler({ handler: close })
+
+  if (name !== openName) return null
+
+  return createPortal(
+    <Overlay>
+      <StyledModal ref={ref}>
+        <Button onClick={close}>
+          <HiXMark />
+        </Button>
+        <div>{cloneElement(children, { onCloseModal: close })}</div>
+      </StyledModal>
+    </Overlay>,
+    document.body,
+  )
+}
+
+Modal.Trigger = Trigger
+Modal.Content = Content
+
+export default Modal
