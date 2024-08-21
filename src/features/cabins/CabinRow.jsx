@@ -1,7 +1,10 @@
-import { useState } from 'react'
 import { HiPencil, HiSquare2Stack, HiTrash } from 'react-icons/hi2'
 import styled from 'styled-components'
 import { CabinHooks } from '../../hooks/cabins/cabins.hooks'
+import ConfirmDelete from '../../ui/ConfirmDelete'
+import Menus from '../../ui/Menus'
+import Modal from '../../ui/Modal'
+import Table from '../../ui/Table'
 import { formatCurrency } from '../../utils/helpers'
 import CabinForm from './CabinForm'
 
@@ -45,21 +48,11 @@ const Discount = styled.div`
 `
 
 const CabinRow = ({ cabin }) => {
-  const {
-    id: cabinId,
-    name,
-    maxCapacity,
-    regularPrice,
-    discount,
-    image,
-    description,
-  } = cabin
-  const [showForm, setShowForm] = useState(false)
+  const { id: cabinId, name, maxCapacity, regularPrice, discount, image, description } = cabin
 
   const { deleteCabin, isDeleting } = CabinHooks.useDeleteCabin({})
   const { createCabin, isCreatingCabin } = CabinHooks.useCreateCabin({})
 
-  const onPressEdit = () => setShowForm(show => !show)
   const onPressDelete = () => deleteCabin(cabinId)
   const onPressDuplicate = () =>
     createCabin({
@@ -74,31 +67,38 @@ const CabinRow = ({ cabin }) => {
   const isDisabled = isDeleting || isCreatingCabin
 
   return (
-    <>
-      <TableRow role='row'>
-        <Img src={image} loading='lazy' />
-        <Cabin>{name}</Cabin>
-        <div>Upto {maxCapacity} guests</div>
-        <Price>{formatCurrency(regularPrice)}</Price>
-        {discount ? (
-          <Discount>{formatCurrency(discount)}</Discount>
-        ) : (
-          <span>&mdash;</span>
-        )}
-        <div>
-          <button onClick={onPressDuplicate} disabled={isDisabled}>
-            <HiSquare2Stack />
-          </button>
-          <button onClick={onPressEdit} disabled={isDisabled}>
-            <HiPencil />
-          </button>
-          <button onClick={onPressDelete} disabled={isDisabled}>
-            <HiTrash />
-          </button>
-        </div>
-      </TableRow>
-      {showForm && <CabinForm cabin={cabin} />}
-    </>
+    <Table.Row role='row'>
+      <Img src={image} loading='lazy' />
+      <Cabin>{name}</Cabin>
+      <div>Upto {maxCapacity} guests</div>
+      <Price>{formatCurrency(regularPrice)}</Price>
+      {discount ? <Discount>{formatCurrency(discount)}</Discount> : <span>&mdash;</span>}
+      <div>
+        <Modal>
+          <Menus.Menu>
+            <Menus.Toggle id={cabinId} />
+            <Menus.List id={cabinId}>
+              <Menus.Button icon={<HiSquare2Stack />} onClick={onPressDuplicate}>
+                Duplicate
+              </Menus.Button>
+              <Modal.Trigger opens={'edit-cabin'}>
+                <Menus.Button icon={<HiPencil />}>Edit</Menus.Button>
+              </Modal.Trigger>
+              <Modal.Trigger opens={'delete-cabin'}>
+                <Menus.Button icon={<HiTrash />}>Delete</Menus.Button>
+              </Modal.Trigger>
+            </Menus.List>
+
+            <Modal.Content name={'edit-cabin'}>
+              <CabinForm cabin={cabin} />
+            </Modal.Content>
+            <Modal.Content name={'delete-cabin'}>
+              <ConfirmDelete resourceName={'cabins'} onConfirm={onPressDelete} disabled={isDeleting} />
+            </Modal.Content>
+          </Menus.Menu>
+        </Modal>
+      </div>
+    </Table.Row>
   )
 }
 
