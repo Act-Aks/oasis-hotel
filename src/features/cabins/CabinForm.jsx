@@ -119,7 +119,7 @@ const CabinForm = ({ cabin = {}, onCloseModal }) => {
 
       <FormRow>
         {/* type is an HTML attribute! */}
-        <Button variant='secondary' type='reset' disabled={isDisabled} onClick={onCloseModal}>
+        <Button $variant='secondary' type='reset' disabled={isDisabled} onClick={onCloseModal}>
           Cancel
         </Button>
         <Button disabled={isDisabled}>{isEditMode ? 'Edit cabin' : 'Create new cabin'}</Button>

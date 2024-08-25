@@ -1,5 +1,6 @@
-import { Children, createContext, useContext } from 'react'
+import { createContext, useContext } from 'react'
 import styled from 'styled-components'
+import List from './List'
 
 const StyledTable = styled.div`
   border: 1px solid var(--color-grey-200);
@@ -99,9 +100,9 @@ const Row = ({ children }) => {
 }
 
 const Content = ({ data, render }) => {
-  if (!data) return <Empty>No data </Empty>
+  if (!data) return <Empty>No data</Empty>
 
-  return <StyledBody>{Children.toArray(data.map(render))}</StyledBody>
+  return <StyledBody>{<List of={data} render={render} />}</StyledBody>
 }
 
 Table.Header = Header

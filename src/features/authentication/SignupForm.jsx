@@ -26,7 +26,7 @@ const SignupForm = () => {
 
       <FormRow>
         {/* type is an HTML attribute! */}
-        <Button variant='secondary' type='reset'>
+        <Button $variant='secondary' type='reset'>
           Cancel
         </Button>
         <Button>Create new user</Button>

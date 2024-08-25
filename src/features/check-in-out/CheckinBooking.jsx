@@ -22,14 +22,7 @@ function CheckinBooking() {
 
   const booking = {}
 
-  const {
-    id: bookingId,
-    guests,
-    totalPrice,
-    numGuests,
-    hasBreakfast,
-    numNights,
-  } = booking
+  const { id: bookingId, guests, totalPrice, numGuests, hasBreakfast, numNights } = booking
 
   function handleCheckin() {}
 
@@ -44,7 +37,7 @@ function CheckinBooking() {
 
       <ButtonGroup>
         <Button onClick={handleCheckin}>Check in booking #{bookingId}</Button>
-        <Button variant='secondary' onClick={moveBack}>
+        <Button $variant='secondary' onClick={moveBack}>
           Back
         </Button>
       </ButtonGroup>

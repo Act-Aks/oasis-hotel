@@ -6,5 +6,6 @@ export default {
   Users: 'users',
   Account: 'account',
   Login: 'login',
+  BookingDetails: 'booking/:bookingId',
   Error: '*',
 }

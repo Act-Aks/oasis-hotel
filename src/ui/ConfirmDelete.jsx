@@ -27,10 +27,10 @@ const ConfirmDelete = ({ resourceName, onConfirm, disabled, onCloseModal }) => {
       <p>Are you sure you want to delete this {resourceName} permanently? This action cannot be undone.</p>
 
       <div>
-        <Button variant='secondary' onClick={onCloseModal} disabled={disabled}>
+        <Button $variant='secondary' onClick={onCloseModal} disabled={disabled}>
           Cancel
         </Button>
-        <Button variant='danger' onClick={onConfirm} disabled={disabled}>
+        <Button $variant='danger' onClick={onConfirm} disabled={disabled}>
           Delete
         </Button>
       </div>

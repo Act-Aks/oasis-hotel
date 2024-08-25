@@ -41,7 +41,7 @@ function BookingDetail() {
       <BookingDataBox booking={booking} />
 
       <ButtonGroup>
-        <Button variant='secondary' onClick={moveBack}>
+        <Button $variant='secondary' onClick={moveBack}>
           Back
         </Button>
       </ButtonGroup>

@@ -1,18 +1,20 @@
-import styled from "styled-components";
-import { format, isToday } from "date-fns";
+import { format, isToday } from 'date-fns'
+import styled from 'styled-components'
 
-import Tag from "../../ui/Tag";
-import Table from "../../ui/Table";
+import Table from '../../ui/Table'
+import Tag from '../../ui/Tag'
 
-import { formatCurrency } from "../../utils/helpers";
-import { formatDistanceFromNow } from "../../utils/helpers";
+import { HiEye } from 'react-icons/hi2'
+import { useNavigate } from 'react-router-dom'
+import Menus from '../../ui/Menus'
+import { formatCurrency, formatDistanceFromNow, getRoute } from '../../utils/helpers'
 
 const Cabin = styled.div`
   font-size: 1.6rem;
   font-weight: 600;
   color: var(--color-grey-600);
-  font-family: "Sono";
-`;
+  font-family: 'Sono';
+`
 
 const Stacked = styled.div`
   display: flex;
@@ -27,14 +29,14 @@ const Stacked = styled.div`
     color: var(--color-grey-500);
     font-size: 1.2rem;
   }
-`;
+`
 
 const Amount = styled.div`
-  font-family: "Sono";
+  font-family: 'Sono';
   font-weight: 500;
-`;
+`
 
-function BookingRow({
+const BookingRow = ({
   booking: {
     id: bookingId,
     created_at,
@@ -47,12 +49,13 @@ function BookingRow({
     guests: { fullName: guestName, email },
     cabins: { name: cabinName },
   },
-}) {
+}) => {
   const statusToTagName = {
-    unconfirmed: "blue",
-    "checked-in": "green",
-    "checked-out": "silver",
-  };
+    unconfirmed: 'blue',
+    'checked-in': 'green',
+    'checked-out': 'silver',
+  }
+  const navigate = useNavigate()
 
   return (
     <Table.Row>
@@ -65,22 +68,27 @@ function BookingRow({
 
       <Stacked>
         <span>
-          {isToday(new Date(startDate))
-            ? "Today"
-            : formatDistanceFromNow(startDate)}{" "}
-          &rarr; {numNights} night stay
+          {isToday(new Date(startDate)) ? 'Today' : formatDistanceFromNow(startDate)} &rarr; {numNights} night stay
         </span>
         <span>
-          {format(new Date(startDate), "MMM dd yyyy")} &mdash;{" "}
-          {format(new Date(endDate), "MMM dd yyyy")}
+          {format(new Date(startDate), 'MMM dd yyyy')} &mdash; {format(new Date(endDate), 'MMM dd yyyy')}
         </span>
       </Stacked>
 
-      <Tag type={statusToTagName[status]}>{status.replace("-", " ")}</Tag>
+      <Tag type={statusToTagName[status]}>{status.replace('-', ' ')}</Tag>
 
       <Amount>{formatCurrency(totalPrice)}</Amount>
+
+      <Menus.Menu>
+        <Menus.Toggle id={bookingId} />
+        <Menus.List id={bookingId}>
+          <Menus.Button icon={<HiEye />} onClick={() => navigate(`/${getRoute('BookingDetails', { bookingId })}`)}>
+            See details
+          </Menus.Button>
+        </Menus.List>
+      </Menus.Menu>
     </Table.Row>
-  );
+  )
 }
 
-export default BookingRow;
+export default BookingRow

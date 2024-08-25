@@ -1,5 +1,8 @@
+import { useMemo } from 'react'
+import { useSearchParams } from 'react-router-dom'
 import styled from 'styled-components'
 import { CabinHooks } from '../../hooks/cabins/cabins.hooks'
+import Empty from '../../ui/Empty'
 import Menus from '../../ui/Menus'
 import Spinner from '../../ui/Spinner'
 import Table from '../../ui/Table'
@@ -20,11 +23,29 @@ const TableHeader = styled.header`
 `
 
 const CabinTable = () => {
+  const [searchParams] = useSearchParams()
   const { cabins, cabinsLoading } = CabinHooks.useGetCabins()
 
-  if (cabinsLoading) return <Spinner />
+  const filterBy = searchParams.get('discount')
+  const filterCabins = useMemo(() => {
+    switch (filterBy) {
+      case 'no-discount':
+        return cabins?.filter(cabin => cabin.discount === 0)
+      case 'with-discount':
+        return cabins?.filter(cabin => cabin.discount > 0)
+      case 'all':
+      default:
+        return cabins
+    }
+  }, [filterBy, cabins])
 
-  if (!cabins) return <div>No Cabins</div>
+  const sortBy = searchParams.get('sortBy') || 'name-asc'
+  const [sortField, sortOrder] = sortBy.split('-')
+  const modifier = sortOrder === 'asc' ? 1 : -1
+  const sortedCabins = filterCabins?.sort((a, b) => (a?.[sortField] - b?.[sortField]) * modifier)
+
+  if (cabinsLoading) return <Spinner />
+  if (!cabins || !cabins.length) return <Empty resource={'cabins'} />
 
   return (
     <Menus>
@@ -38,7 +59,7 @@ const CabinTable = () => {
           <div />
         </Table.Header>
 
-        <Table.Content data={cabins} render={cabin => <CabinRow key={cabin.id} cabin={cabin} />} />
+        <Table.Content data={sortedCabins} render={cabin => <CabinRow key={cabin.id} cabin={cabin} />} />
       </Table>
     </Menus>
   )

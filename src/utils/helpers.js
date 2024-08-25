@@ -1,4 +1,5 @@
 import { differenceInDays, formatDistance, parseISO } from 'date-fns'
+import routes from '../constants/routes'
 
 // We want to make this function work for both Date objects and strings (which come from Supabase)
 export const subtractDates = (dateStr1, dateStr2) =>
@@ -23,7 +24,14 @@ export const getToday = function (options = {}) {
   return today.toISOString()
 }
 
-export const formatCurrency = value =>
-  new Intl.NumberFormat('en', { style: 'currency', currency: 'USD' }).format(
-    value,
-  )
+export const formatCurrency = value => new Intl.NumberFormat('en', { style: 'currency', currency: 'USD' }).format(value)
+
+export const getRoute = (routeName, params = {}) => {
+  const route = routes[routeName]
+
+  if (!route) {
+    throw new Error(`Route "${routeName}" does not exist.`)
+  }
+
+  return route.replace(/:([a-zA-Z0-9]+)/g, (match, key) => (typeof params[key] !== 'undefined' ? params[key] : match))
+}
