@@ -4,8 +4,9 @@ import styled from 'styled-components'
 import Table from '../../ui/Table'
 import Tag from '../../ui/Tag'
 
-import { HiEye } from 'react-icons/hi2'
+import { HiArrowDownOnSquare, HiArrowUpOnSquare, HiEye } from 'react-icons/hi2'
 import { useNavigate } from 'react-router-dom'
+import { BookingsHooks } from '../../hooks/bookings/bookings.hooks'
 import Menus from '../../ui/Menus'
 import { formatCurrency, formatDistanceFromNow, getRoute } from '../../utils/helpers'
 
@@ -50,12 +51,21 @@ const BookingRow = ({
     cabins: { name: cabinName },
   },
 }) => {
+  const navigate = useNavigate()
+  const { checkOut, isCheckingOut } = BookingsHooks.useCheckOut({})
+
   const statusToTagName = {
     unconfirmed: 'blue',
     'checked-in': 'green',
     'checked-out': 'silver',
   }
-  const navigate = useNavigate()
+
+  const handleCheckOut = () => {
+    checkOut(bookingId)
+  }
+  const handleCheckIn = () => {
+    navigate(`/${getRoute('BookingDetails', { bookingId })}`)
+  }
 
   return (
     <Table.Row>
@@ -82,9 +92,24 @@ const BookingRow = ({
       <Menus.Menu>
         <Menus.Toggle id={bookingId} />
         <Menus.List id={bookingId}>
-          <Menus.Button icon={<HiEye />} onClick={() => navigate(`/${getRoute('BookingDetails', { bookingId })}`)}>
+          <Menus.Button icon={<HiEye />} onClick={handleCheckIn}>
             See details
           </Menus.Button>
+
+          {status === 'unconfirmed' && (
+            <Menus.Button
+              icon={<HiArrowDownOnSquare />}
+              onClick={() => navigate(`/${getRoute('CheckIn', { bookingId })}`)}
+            >
+              Check in
+            </Menus.Button>
+          )}
+
+          {status === 'checked-in' && (
+            <Menus.Button icon={<HiArrowUpOnSquare />} onClick={handleCheckOut} disabled={isCheckingOut}>
+              Check out
+            </Menus.Button>
+          )}
         </Menus.List>
       </Menus.Menu>
     </Table.Row>

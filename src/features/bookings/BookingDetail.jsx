@@ -8,7 +8,11 @@ import Row from '../../ui/Row'
 import Tag from '../../ui/Tag'
 import BookingDataBox from './BookingDataBox'
 
+import { useNavigate, useParams } from 'react-router-dom'
+import { BookingsHooks } from '../../hooks/bookings/bookings.hooks'
 import { useMoveBack } from '../../hooks/useMoveBack'
+import Spinner from '../../ui/Spinner'
+import { getRoute } from '../../utils/helpers'
 
 const HeadingGroup = styled.div`
   display: flex;
@@ -16,12 +20,15 @@ const HeadingGroup = styled.div`
   align-items: center;
 `
 
-function BookingDetail() {
-  const booking = {}
-  const status = 'checked-in'
-
+const BookingDetail = () => {
+  const { bookingId } = useParams()
+  const { booking, isBookingLoading } = BookingsHooks.useGetBooking(bookingId)
   const moveBack = useMoveBack()
+  const navigate = useNavigate()
 
+  if (isBookingLoading) return <Spinner />
+
+  const { status } = booking
   const statusToTagName = {
     unconfirmed: 'blue',
     'checked-in': 'green',
@@ -32,7 +39,7 @@ function BookingDetail() {
     <>
       <Row type='horizontal'>
         <HeadingGroup>
-          <Heading as='h1'>Booking #X</Heading>
+          <Heading as='h1'>Booking #{bookingId}</Heading>
           <Tag type={statusToTagName[status]}>{status.replace('-', ' ')}</Tag>
         </HeadingGroup>
         <ButtonText onClick={moveBack}>&larr; Back</ButtonText>
@@ -44,6 +51,10 @@ function BookingDetail() {
         <Button $variant='secondary' onClick={moveBack}>
           Back
         </Button>
+
+        {status === 'unconfirmed' && (
+          <Button onClick={() => navigate(`/${getRoute('CheckIn', { bookingId })}`)}>Check in</Button>
+        )}
       </ButtonGroup>
     </>
   )

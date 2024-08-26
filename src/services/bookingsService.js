@@ -33,7 +33,7 @@ export const getBooking = async id => {
 
   if (error) {
     console.error(error)
-    throw new Error('Booking not found')
+    throw new Error(`Booking with id ${id} not found`)
   }
 
   return data

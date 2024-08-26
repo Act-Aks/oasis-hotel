@@ -7,5 +7,7 @@ export default {
   Account: 'account',
   Login: 'login',
   BookingDetails: 'booking/:bookingId',
+  CheckIn: 'check-in/:bookingId',
+  Home: '/',
   Error: '*',
 }
