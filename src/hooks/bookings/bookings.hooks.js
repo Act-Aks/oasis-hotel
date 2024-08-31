@@ -4,7 +4,7 @@ import { useNavigate, useSearchParams } from 'react-router-dom'
 import { PAGE_SIZE } from '../../constants/misc'
 import { QueryKeys } from '../../constants/queryKeys'
 import routes from '../../constants/routes'
-import { getBooking, getBookings, updateBooking } from '../../services/bookingsService'
+import { deleteBooking, getBooking, getBookings, updateBooking } from '../../services/bookingsService'
 
 const useGetBookings = () => {
   const [searchParams] = useSearchParams()
@@ -96,6 +96,7 @@ const useCheckIn = ({ onSuccess, onError }) => {
     checkInError: error,
   }
 }
+
 const useCheckOut = ({ onSuccess, onError }) => {
   const queryClient = useQueryClient()
   const { mutate, isPending, error } = useMutation({
@@ -118,9 +119,33 @@ const useCheckOut = ({ onSuccess, onError }) => {
   }
 }
 
+const useDeleteBooking = ({ onSuccess, onError }) => {
+  const queryClient = useQueryClient()
+  const { mutate, isPending } = useMutation({
+    mutationFn: deleteBooking,
+    onSuccess: () => {
+      toast.success('Successfully deleted')
+      queryClient.invalidateQueries({
+        queryKey: [QueryKeys.Bookings],
+      })
+      onSuccess?.()
+    },
+    onError: error => {
+      toast.error(error.message)
+      onError?.()
+    },
+  })
+
+  return {
+    deleteBooking: mutate,
+    isDeleting: isPending,
+  }
+}
+
 export const BookingsHooks = {
-  useGetBookings,
-  useGetBooking,
   useCheckIn,
   useCheckOut,
+  useDeleteBooking,
+  useGetBooking,
+  useGetBookings,
 }

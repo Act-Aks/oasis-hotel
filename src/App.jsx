@@ -15,6 +15,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 import BookingOverview from './pages/BookingOverview'
 import CheckIn from './pages/CheckIn'
+import ProtectedRoute from './ui/ProtectedRoute'
 import Toaster from './ui/Toaster'
 
 const queryClient = new QueryClient({
@@ -32,7 +33,13 @@ const App = () => {
       <GlobalStyles />
       <BrowserRouter>
         <Routes>
-          <Route element={<AppLayout />}>
+          <Route
+            element={
+              <ProtectedRoute>
+                <AppLayout />
+              </ProtectedRoute>
+            }
+          >
             <Route index element={<Navigate replace to={routes.Dashboard} />} />
             <Route path={routes.Dashboard} element={<Dashboard />} />
             <Route path={routes.BookingDetails} element={<BookingOverview />} />
