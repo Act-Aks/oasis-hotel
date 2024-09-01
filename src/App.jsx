@@ -13,6 +13,7 @@ import AppLayout from './ui/AppLayout'
 
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
+import { DarkModeProvider } from './context/darkModeContext'
 import BookingOverview from './pages/BookingOverview'
 import CheckIn from './pages/CheckIn'
 import ProtectedRoute from './ui/ProtectedRoute'
@@ -28,35 +29,37 @@ const queryClient = new QueryClient({
 
 const App = () => {
   return (
-    <QueryClientProvider client={queryClient}>
-      <ReactQueryDevtools initialIsOpen={false} />
-      <GlobalStyles />
-      <BrowserRouter>
-        <Routes>
-          <Route
-            element={
-              <ProtectedRoute>
-                <AppLayout />
-              </ProtectedRoute>
-            }
-          >
-            <Route index element={<Navigate replace to={routes.Dashboard} />} />
-            <Route path={routes.Dashboard} element={<Dashboard />} />
-            <Route path={routes.BookingDetails} element={<BookingOverview />} />
-            <Route path={routes.CheckIn} element={<CheckIn />} />
-            <Route path={routes.Bookings} element={<Bookings />} />
-            <Route path={routes.Cabins} element={<Cabins />} />
-            <Route path={routes.Users} element={<Users />} />
-            <Route path={routes.Settings} element={<Settings />} />
-            <Route path={routes.Account} element={<Account />} />
-          </Route>
-          <Route path={routes.Login} element={<Login />} />
-          <Route path={routes.Error} element={<PageNotFound />} />
-        </Routes>
-      </BrowserRouter>
+    <DarkModeProvider>
+      <QueryClientProvider client={queryClient}>
+        <ReactQueryDevtools initialIsOpen={false} />
+        <GlobalStyles />
+        <BrowserRouter>
+          <Routes>
+            <Route
+              element={
+                <ProtectedRoute>
+                  <AppLayout />
+                </ProtectedRoute>
+              }
+            >
+              <Route index element={<Navigate replace to={routes.Dashboard} />} />
+              <Route path={routes.Dashboard} element={<Dashboard />} />
+              <Route path={routes.BookingDetails} element={<BookingOverview />} />
+              <Route path={routes.CheckIn} element={<CheckIn />} />
+              <Route path={routes.Bookings} element={<Bookings />} />
+              <Route path={routes.Cabins} element={<Cabins />} />
+              <Route path={routes.Users} element={<Users />} />
+              <Route path={routes.Settings} element={<Settings />} />
+              <Route path={routes.Account} element={<Account />} />
+            </Route>
+            <Route path={routes.Login} element={<Login />} />
+            <Route path={routes.Error} element={<PageNotFound />} />
+          </Routes>
+        </BrowserRouter>
 
-      <Toaster />
-    </QueryClientProvider>
+        <Toaster />
+      </QueryClientProvider>
+    </DarkModeProvider>
   )
 }
 

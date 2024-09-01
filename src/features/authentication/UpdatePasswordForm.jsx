@@ -4,16 +4,24 @@ import Form from '../../ui/Form'
 import FormRow from '../../ui/FormRow'
 import Input from '../../ui/Input'
 
-import { useUpdateUser } from './useUpdateUser'
+import styled from 'styled-components'
+import { AuthHooks } from '../../hooks/auth/auth.hooks'
+import SpinnerMini from '../../ui/SpinnerMini'
+
+const LoadingWrapper = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 4px;
+`
 
 const UpdatePasswordForm = () => {
   const { register, handleSubmit, formState, getValues, reset } = useForm()
   const { errors } = formState
 
-  const { updateUser, isUpdating } = useUpdateUser()
+  const { updateUser, updateUserLoading: isUpdating } = AuthHooks.useUpdateUser()
 
-  function onSubmit({ password }) {
-    updateUser({ password }, { onSuccess: reset })
+  const onSubmit = ({ password }) => {
+    updateUser({ password }, { onSuccess: () => reset() })
   }
 
   return (
@@ -47,10 +55,15 @@ const UpdatePasswordForm = () => {
         />
       </FormRow>
       <FormRow>
-        <Button onClick={reset} type='reset' $variant='secondary'>
+        <Button onClick={reset} type='reset' $variant='secondary' disabled={isUpdating}>
           Cancel
         </Button>
-        <Button disabled={isUpdating}>Update password</Button>
+        <Button disabled={isUpdating}>
+          <LoadingWrapper>
+            {isUpdating && <SpinnerMini />}
+            {'Update password'}
+          </LoadingWrapper>
+        </Button>
       </FormRow>
     </Form>
   )

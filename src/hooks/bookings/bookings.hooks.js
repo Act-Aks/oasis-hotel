@@ -1,10 +1,20 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { subDays } from 'date-fns'
 import toast from 'react-hot-toast'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import { PAGE_SIZE } from '../../constants/misc'
 import { QueryKeys } from '../../constants/queryKeys'
 import routes from '../../constants/routes'
-import { deleteBooking, getBooking, getBookings, updateBooking } from '../../services/bookingsService'
+import {
+  deleteBooking,
+  getBooking,
+  getBookings,
+  getBookingsAfterDate,
+  getStaysAfterDate,
+  updateBooking,
+} from '../../services/bookingsService'
+
+const DEFAULT_NUMBER_OF_DAYS = 7
 
 const useGetBookings = () => {
   const [searchParams] = useSearchParams()
@@ -142,10 +152,51 @@ const useDeleteBooking = ({ onSuccess, onError }) => {
   }
 }
 
+const useRecentBookings = () => {
+  const [searchParams, setSearchParams] = useSearchParams()
+  const numberDays = !searchParams.get('last') ? DEFAULT_NUMBER_OF_DAYS : Number(searchParams.get('last'))
+
+  const queryDate = subDays(new Date(), numberDays).toISOString()
+  const { data, error, isLoading } = useQuery({
+    queryFn: () => getBookingsAfterDate(queryDate),
+    queryKey: [QueryKeys.Bookings, `last-${numberDays}`],
+  })
+
+  return {
+    recentBookings: data,
+    recentBookingsLoading: isLoading,
+    recentBookingsError: error,
+    numberDays,
+  }
+}
+
+const useRecentStays = () => {
+  const [searchParams, setSearchParams] = useSearchParams()
+  const numberDays = !searchParams.get('last') ? DEFAULT_NUMBER_OF_DAYS : Number(searchParams.get('last'))
+
+  const queryDate = subDays(new Date(), numberDays).toISOString()
+  const { data, error, isLoading } = useQuery({
+    queryFn: () => getStaysAfterDate(queryDate),
+    queryKey: [QueryKeys.Stays, `last-${numberDays}`],
+  })
+
+  const confirmedStays = data?.filter(stay => stay.status === 'checked-in' || stay.status === 'checked-out')
+
+  return {
+    recentStays: data,
+    recentStaysLoading: isLoading,
+    recentStaysError: error,
+    confirmedStays,
+    numberDays,
+  }
+}
+
 export const BookingsHooks = {
   useCheckIn,
   useCheckOut,
   useDeleteBooking,
   useGetBooking,
   useGetBookings,
+  useRecentBookings,
+  useRecentStays,
 }

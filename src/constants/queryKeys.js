@@ -4,4 +4,5 @@ export const QueryKeys = {
   User: 'user',
   Bookings: 'bookings',
   Booking: 'booking',
+  Stays: 'stays',
 }

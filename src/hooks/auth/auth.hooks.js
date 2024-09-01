@@ -3,7 +3,7 @@ import toast from 'react-hot-toast'
 import { useNavigate } from 'react-router-dom'
 import { QueryKeys } from '../../constants/queryKeys'
 import routes from '../../constants/routes'
-import { getCurrentUser, login, logout } from '../../services/authService'
+import { getCurrentUser, login, logout, signUp, updateCurrentUser } from '../../services/authService'
 
 const useLogin = ({ onSuccess, onError } = {}) => {
   const navigate = useNavigate()
@@ -61,8 +61,52 @@ const useLogout = () => {
   }
 }
 
+const useSignUp = ({ onSuccess, onError } = {}) => {
+  const { mutate, isPending, error } = useMutation({
+    mutationFn: signUp,
+    onSuccess: data => {
+      toast.success(`Account successfully created!. Please verify your new account's email`)
+      onSuccess?.()
+    },
+    onError: error => {
+      toast.error(error.message)
+      onError?.()
+    },
+  })
+
+  return {
+    signUp: mutate,
+    signUpLoading: isPending,
+    signUpError: error,
+  }
+}
+
+const useUpdateUser = ({ onSuccess, onError } = {}) => {
+  const queryClient = useQueryClient()
+  const { mutate, isPending, error } = useMutation({
+    mutationFn: updateCurrentUser,
+    onSuccess: () => {
+      toast.success('User account successfully updated')
+      queryClient.invalidateQueries({ queryKey: [QueryKeys.User] })
+      onSuccess?.()
+    },
+    onError: error => {
+      toast.error(error.message)
+      onError?.()
+    },
+  })
+
+  return {
+    updateUser: mutate,
+    updateUserLoading: isPending,
+    updateUserError: error,
+  }
+}
+
 export const AuthHooks = {
   useLogin,
   useLogout,
   useUser,
+  useSignUp,
+  useUpdateUser,
 }

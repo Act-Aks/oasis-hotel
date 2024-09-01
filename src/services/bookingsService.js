@@ -43,7 +43,7 @@ export const getBooking = async id => {
 export const getBookingsAfterDate = async date => {
   const { data, error } = await supabase
     .from('bookings')
-    .select('created_at, totalPrice, extrasPrice')
+    .select('created_at, totalPrice, extraPrice')
     .gte('created_at', date)
     .lte('created_at', getToday({ end: true }))
 
