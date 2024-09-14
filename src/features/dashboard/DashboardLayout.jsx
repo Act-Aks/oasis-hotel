@@ -2,6 +2,9 @@ import styled from 'styled-components'
 import { BookingsHooks } from '../../hooks/bookings/bookings.hooks'
 import { CabinHooks } from '../../hooks/cabins/cabins.hooks'
 import Spinner from '../../ui/Spinner'
+import TodayActivity from '../check-in-out/TodayActivity'
+import { DurationChart } from './DurationChart'
+import { SalesChart } from './SalesChart'
 import Stats from './Stats'
 
 const StyledDashboardLayout = styled.div`
@@ -26,9 +29,9 @@ const DashboardLayout = () => {
         numDays={numberDays}
         cabinsCount={cabins?.length}
       />
-      <div>Todays</div>
-      <div>chart</div>
-      <div>chart sales</div>
+      <TodayActivity />
+      <DurationChart confirmedStays={confirmedStays} />
+      <SalesChart bookings={recentBookings} numberDays={numberDays} />
     </StyledDashboardLayout>
   )
 }

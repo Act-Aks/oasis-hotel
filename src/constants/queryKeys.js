@@ -5,4 +5,5 @@ export const QueryKeys = {
   Bookings: 'bookings',
   Booking: 'booking',
   Stays: 'stays',
+  TodayActivity: 'today-activity',
 }

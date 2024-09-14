@@ -11,6 +11,7 @@ import {
   getBookings,
   getBookingsAfterDate,
   getStaysAfterDate,
+  getStaysTodayActivity,
   updateBooking,
 } from '../../services/bookingsService'
 
@@ -153,7 +154,7 @@ const useDeleteBooking = ({ onSuccess, onError }) => {
 }
 
 const useRecentBookings = () => {
-  const [searchParams, setSearchParams] = useSearchParams()
+  const [searchParams] = useSearchParams()
   const numberDays = !searchParams.get('last') ? DEFAULT_NUMBER_OF_DAYS : Number(searchParams.get('last'))
 
   const queryDate = subDays(new Date(), numberDays).toISOString()
@@ -171,7 +172,7 @@ const useRecentBookings = () => {
 }
 
 const useRecentStays = () => {
-  const [searchParams, setSearchParams] = useSearchParams()
+  const [searchParams] = useSearchParams()
   const numberDays = !searchParams.get('last') ? DEFAULT_NUMBER_OF_DAYS : Number(searchParams.get('last'))
 
   const queryDate = subDays(new Date(), numberDays).toISOString()
@@ -191,6 +192,19 @@ const useRecentStays = () => {
   }
 }
 
+const useGetTodayActivity = () => {
+  const { data, isLoading, error } = useQuery({
+    queryKey: [QueryKeys.TodayActivity],
+    queryFn: getStaysTodayActivity,
+  })
+
+  return {
+    todayActivity: data,
+    isTodayActivityLoading: isLoading,
+    todayActivityError: error,
+  }
+}
+
 export const BookingsHooks = {
   useCheckIn,
   useCheckOut,
@@ -199,4 +213,5 @@ export const BookingsHooks = {
   useGetBookings,
   useRecentBookings,
   useRecentStays,
+  useGetTodayActivity,
 }
