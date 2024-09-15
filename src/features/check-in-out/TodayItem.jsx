@@ -1,6 +1,10 @@
+import { Link } from 'react-router-dom'
 import styled from 'styled-components'
+import Button from '../../ui/Button'
 import { Flag } from '../../ui/Flag'
 import Tag from '../../ui/Tag'
+import { getRoute } from '../../utils/helpers'
+import CheckoutButton from './CheckoutButton'
 
 const StyledTodayItem = styled.li`
   display: grid;
@@ -31,6 +35,12 @@ export const TodayItem = ({ activity }) => {
       <Flag src={guests.countryFlag} alt={`Flag of ${guests.country}`} />
       <Guest>{guests.fullName}</Guest>
       <div>{numNights} nights</div>
+      {status === 'unconfirmed' && (
+        <Button size={'small'} $variant={'primary'} as={Link} to={`/${getRoute('CheckIn', { bookingId: id })}`}>
+          Check in
+        </Button>
+      )}
+      {status === 'checked-in' && <CheckoutButton bookingId={id} />}
     </StyledTodayItem>
   )
 }

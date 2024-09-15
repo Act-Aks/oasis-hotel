@@ -1,8 +1,15 @@
+import { BookingsHooks } from '../../hooks/bookings/bookings.hooks'
 import Button from '../../ui/Button'
 
-function CheckoutButton({ bookingId }) {
+const CheckoutButton = ({ bookingId }) => {
+  const { checkOut, isCheckingOut } = BookingsHooks.useCheckOut({})
+
+  const handleCheckOut = () => {
+    checkOut(bookingId)
+  }
+
   return (
-    <Button $variant='primary' size='small'>
+    <Button $variant='primary' size='small' onClick={handleCheckOut} disabled={isCheckingOut}>
       Check out
     </Button>
   )

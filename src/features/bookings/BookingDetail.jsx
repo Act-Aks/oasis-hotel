@@ -13,6 +13,7 @@ import { useNavigate, useParams } from 'react-router-dom'
 import { BookingsHooks } from '../../hooks/bookings/bookings.hooks'
 import { useMoveBack } from '../../hooks/useMoveBack'
 import ConfirmDelete from '../../ui/ConfirmDelete'
+import Empty from '../../ui/Empty'
 import Modal from '../../ui/Modal'
 import Spinner from '../../ui/Spinner'
 import { getRoute } from '../../utils/helpers'
@@ -32,6 +33,7 @@ const BookingDetail = () => {
   const navigate = useNavigate()
 
   if (isBookingLoading) return <Spinner />
+  if (!booking) return <Empty resource={'booking'} />
 
   const { status } = booking
   const statusToTagName = {

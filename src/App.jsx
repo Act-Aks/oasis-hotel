@@ -13,7 +13,7 @@ import AppLayout from './ui/AppLayout'
 
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
-import { DarkModeProvider } from './context/darkModeContext'
+import { DarkModeProvider } from './context/DarkModeContext'
 import BookingOverview from './pages/BookingOverview'
 import CheckIn from './pages/CheckIn'
 import ProtectedRoute from './ui/ProtectedRoute'

@@ -97,6 +97,7 @@ const Toggle = ({ id }) => {
   const { open, openId, close, setPosition } = useMenus()
 
   const handleClick = e => {
+    e.stopPropagation()
     const closestButtonRect = e.target.closest('button').getBoundingClientRect()
     setPosition({
       x: window.innerWidth - closestButtonRect.width - closestButtonRect.x,
@@ -114,7 +115,7 @@ const Toggle = ({ id }) => {
 
 const List = ({ children, id }) => {
   const { openId, position, close } = useMenus()
-  const { ref } = useOutsideClickHandler({ handler: close })
+  const { ref } = useOutsideClickHandler({ handler: close, listenToCapturing: false })
 
   if (openId !== id) return null
 
